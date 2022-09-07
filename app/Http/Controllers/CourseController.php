@@ -4,8 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Course;
+use App\Http\Requests\StoreCoursesRequest;
+use App\Http\Resources\CourseResource;
+use App\Http\Resources\CourseCollection;
+use App\Http\Controllers\BaseController;
 
-class CourseController extends Controller
+class CourseController extends BaseController
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +18,18 @@ class CourseController extends Controller
      */
     public function index()
     {
-        //
+        //metodo json
+        //parametros: 1. data a encier al cliente
+        //            2. codigo status http
+        // return response()->json( new Bootcampcollection(Bootcamp::all())
+        //                             ,200);
+        try{
+            return $this->sendResponse(new CourseCollection(Course::all()));
+        }catch(\Exception $e){
+            return $this->sendError( 'server error',500 );
+        }
+        
+
     }
 
     /**
@@ -23,17 +38,21 @@ class CourseController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, $id)
-    {   
+    public function store(StoreCoursesRequest $request, $id)
+    {
         $curso = new Course();
-        $curso->bootcamp_id = $id; 
+        $curso->bootcamp_id = $id;
         $curso->title = $request->title;
         $curso->weeks = $request->weeks;
         $curso->description = $request->description;
         $curso->enroll_cost = $request->enroll_cost;
         $curso->minimum_skill = $request->minimum_skill;
         $curso->save();
-        return response()->json(["success" => true, "data" => $curso],200);
+
+        return response()->json( [
+                                    "success" => true,
+                                    "data" => $curso
+                                ] , 200 );
     }
 
     /**
@@ -44,7 +63,9 @@ class CourseController extends Controller
      */
     public function show($id)
     {
-        //
+        return response()->json( [ "success" => true,
+                                    "data" => new CourseResource(Course::find($id))
+                                     ] ,200);
     }
 
     /**
@@ -56,7 +77,12 @@ class CourseController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $b = Course::find($id);
+        //actializar con update
+        $b->update($request->all());
+        return response()->json([ "success" => true,
+                                    "data" => new CourseResource($b)
+                                ] , 200);
     }
 
     /**
@@ -67,6 +93,9 @@ class CourseController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $b = Course::find($id);
+        $b->delete($id);
+        return $this->sendResponse(new CourseResource($b));
     }
 }
+

@@ -28,4 +28,5 @@ Route::get('prueba', function(){
 //Ruta de rest para la gestion de estado de los bootscamp
 
 Route::apiResource('bootcamps', BootcampController::class);
+Route::apiResource('courses', CourseController::class);
 Route::post('course/{idbootcamp}/create',[CourseController::class , "store"]);

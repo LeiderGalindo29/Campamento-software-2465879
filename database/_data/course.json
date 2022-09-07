@@ -1,0 +1,11 @@
+[  
+    {
+        "title":"Contra",
+        "description":"Software for Game",
+        "weeks":2,
+        "enroll_cost":2.000,
+        "minimum_skills" : "Beginner",
+        "bootcamp_id" : 3
+    }
+
+]
